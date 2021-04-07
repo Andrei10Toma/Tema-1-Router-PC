@@ -8,9 +8,10 @@ int main(int argc, char *argv[]) {
 
 	init(argc - 2, argv + 2);
 
-	// initialize the route table and the arp table and sort the route table
-	struct route_table* route_table = parse_route_table(argv[1]);	
-	qsort(route_table->table, route_table->current_length, sizeof(struct route_table_entry), cmpfunction);
+	// initialize the route table and the arp table and sort the route table for every mask
+	struct route_table** route_table = parse_route_table(argv[1]);
+	for (int i = 0; i < 32; i++) 	
+		qsort(route_table[i]->table, route_table[i]->current_length, sizeof(struct route_table_entry), cmpfunction);
 	struct arp_table* arp_table = init_arp_table();
 	while (1) {
 		rc = get_packet(&m);

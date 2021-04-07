@@ -1,6 +1,8 @@
 #pragma once
 #include "skel.h"
 
+#define MASK 1
+
 /**
  * structure of a cell from the route table
  * */
@@ -42,7 +44,7 @@ struct route_table {
  * @param filename - name of the file where the route table is located
  * @return the parsed route table
  * */
-struct route_table* parse_route_table(char *filename);
+struct route_table** parse_route_table(char *filename);
 
 /**
  * find the best route for the packet
@@ -50,7 +52,7 @@ struct route_table* parse_route_table(char *filename);
  * @param destination - the destination ip
  * @return the best route found
  * */
-struct route_table_entry *find_best_route(struct route_table *rtable, uint32_t destination);
+struct route_table_entry *find_best_route(struct route_table **rtable, uint32_t destination);
 
 /**
  * function for the sort of route table
@@ -70,7 +72,7 @@ struct arp_table* init_arp_table();
  * cauta in tabela arp
  * @param arp_table - tabela arp in care se cauta
  * @param ip_addr - adresa ip care este cautata
- * @return the entry found in the arp
+ * @return the entry found in the arp table
  * */
 struct arp_table_entry* search_arp_table(struct arp_table* arp_table, uint32_t ip_addr);
 

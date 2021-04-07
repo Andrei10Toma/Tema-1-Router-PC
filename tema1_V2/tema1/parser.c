@@ -1,34 +1,5 @@
 #include "parser.h"
 
-void print_ip(uint32_t ip) {
-    unsigned char bytes[4];
-    bytes[0] = ip & 0xFF;
-    bytes[1] = (ip >> 8) & 0xFF;
-    bytes[2] = (ip >> 16) & 0xFF;
-    bytes[3] = (ip >> 24) & 0xFF;   
-    printf("%d.%d.%d.%d", bytes[0], bytes[1], bytes[2], bytes[3]);
-}
-
-void print_mac(uint8_t mac[6]) {
-    for (int i = 0; i < 6; i++) {
-        if (i != 5) printf("%x:", mac[i]);
-        else printf("%x", mac[i]);
-    }
-    printf("\n");
-}
-
-void print_route_table (struct route_table* rtable) {
-    for (int i = 0; i < rtable->current_length; i++) {
-        print_ip(rtable->table[i].prefix);
-        printf(" ");
-        print_ip(rtable->table[i].next_hop);
-        printf(" ");
-        print_ip(rtable->table[i].mask);
-        printf(" ");
-        printf("%d\n", rtable->table[i].interface);
-    }
-}
-
 unsigned int convert_mask_to_int(uint32_t mask) {
     unsigned int counter = 0;
     // count how many times bit 1 appears

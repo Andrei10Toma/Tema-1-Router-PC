@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 				// add the entry to the arp table
 				add_entry_arp_table(arp_table, arp_hdr->spa, arp_hdr->sha);
 				// if the queue contains packages that have to be sent extract them and send them
-				if (!queue_empty(q)) {
+				while (!queue_empty(q)) {
 					uint8_t mac[6];
 					memcpy(mac, arp_hdr->sha, 6);
 					packet packet_to_send = *(packet *)queue_deq(q);

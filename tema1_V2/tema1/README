@@ -1,0 +1,61 @@
+    Toma Andrei 321 CB
+
+    Initial part:
+
+    First Task (Route table parsing):
+    For this task I implemented the function parse_route_table that saves the
+information in a structure (struct route_table). To construct the route table I
+used one more structure (struct route_table_entry) that contains the information
+of an entry from the route table: prefix, mask, next_hop and interface. Also, 2
+more fields are used current_length and max_length that will save the
+current_length and the max_length of the table to know when to realloc space
+for the table. The route_table will be like a hash map. The route_table is 
+a double pointer that will have 32 entries (keys) for every possible kind of
+mask. After, I read from the file and the entries are saved in the route table
+based on their mask (the hash) (ex: 255.255.255.0 will be in route_table[24] or 
+255.255.255.255 will be in route_table[32]). To convert the mask in its integer
+form I have a function convert_mask_to_int that will count the number of 1 bits
+in the mask with the help of the bitwise opeartions. Finally, the fields in the
+are populated and the constructed structure is returned.
+
+    Second Task (ARP protocol implementation):
+    When the packet is received the ethernet header, ip header, ARP header and
+the ICMP header are extracted from the payload of the packet. If the protocol
+is ARP the function parse_arp will contain the arp header of the packet. If the
+router receives an arp request and the request is for him the ethernet header
+will be updated with the followings: the destination will become the source of
+the packet and the source will be the mac of the router interface. After that,
+a ARP reply is sent and the host will update the ethernet header. Otherwise,
+if the router will receive an arp reply the entry will be saved in the arp
+table and if the queue contains packets that have to be sent the packets will
+be extracted from the queue the ethernet header will be updated and they will
+be sent to the destination. The arp table will contain the same fields like
+the route table (current_length and max_length) and the arp entries. For the
+arp entries there will be a structure that will contain a mapping from ip
+addresses to the mac addresses.
+
+    Third Task (Forwarding process):
+    The forwarding process is consists of the following steps: verify the
+checksum, decrement the ttl, and check if it is < 1, search in the route table,
+recalculate the checksum and if the arp table doesn't contain entry for the ip
+destination address the packet will be saved in the queue and a ARP request
+will be sent by the router on the next hop with the updated ethernet header
+(destination will be broadcast, the source will be the best interface of
+the mac address and the ether_type with the ARP code). And now the best part
+of the forwarding process is the part where the search in the route table is
+done. The route table that has the functionality of a hash map is to help with
+the searching process to not be in O(n) (linear). The search will be done on
+the keys from 32 to 0 and for every key I will do a binary search in the table
+field (the prefixes are sorted from the begining). If I find a match I will
+return the entry and if I don't find the entry on any key NULL will be returned.
+The worst case for the search will be when the search will iterate throug all of
+the keys. That will make 32 binary searches which means a complexity of
+O(32 * log(n/32)) and the constants doesn't matter so an average case will be
+O(log(n)).
+
+    Forth Task (ICMP protocol support):
+    The ICMP protocol support doesn't have an wow implementation. The icmp header
+is over ip header and if it receives an echo request the router replies with the
+echo reply. For the errors: destination unreachable is sent when a route for the
+next hop is not found (find_best_route returns NULL) and time exceeded is sent
+when the ttl is less than 1.

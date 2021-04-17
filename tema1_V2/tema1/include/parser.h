@@ -1,5 +1,6 @@
 #pragma once
 #include "skel.h"
+#include "queue.h"
 
 #define MASK 1
 
@@ -31,7 +32,7 @@ struct arp_table {
 } __attribute__((packed));
 
 /**
- * structura pentru tabela de rutare
+ * structure for the routing table
  * */
 struct route_table {
     struct route_table_entry* table;    /*Table containing the route table entries*/
@@ -69,17 +70,17 @@ int cmpfunction (const void *a, const void *b);
 struct arp_table* init_arp_table();
 
 /**
- * cauta in tabela arp
- * @param arp_table - tabela arp in care se cauta
- * @param ip_addr - adresa ip care este cautata
+ * search in the arp table
+ * @param arp_table - the arp table where the search will be done
+ * @param ip_addr - the ip address that is searched
  * @return the entry found in the arp table
  * */
 struct arp_table_entry* search_arp_table(struct arp_table* arp_table, uint32_t ip_addr);
 
 /**
- * adauga o intrare in tabela arp
- * @param arp_table - tabela arp in care se adauga
- * @param ip_addr - adresa ip
- * @param mac - adresa mac
+ * add an entry in the arp table
+ * @param arp_table - the arp table where the entry will be added
+ * @param ip_addr - ip address
+ * @param mac - mac address
  * */
-void add_entry_arp_table(struct arp_table* arp_table, uint32_t ip_addr, uint8_t mac[6]);
+void add_entry_arp_table(struct arp_table** arp_table, uint32_t ip_addr, uint8_t mac[6]);

@@ -33,6 +33,10 @@ be sent to the destination. The arp table will contain the same fields like
 the route table (current_length and max_length) and the arp entries. For the
 arp entries there will be a structure that will contain a mapping from ip
 addresses to the mac addresses.
+    The packets from the queue will be send in the order from the queue. I need
+to receive an arp reply for the first element from the queue. For example, if I
+have 2 packets in the queue that wait an arp reply X and Y and X is the first,
+the first arp reply that should come need to be for X and not for Y.
 
     Third Task (Forwarding process):
     The forwarding process is consists of the following steps: verify the

@@ -16,4 +16,13 @@ extern void *queue_deq(queue q);
 /* return a true value if and only if the queue is empty */
 extern int queue_empty(queue q);
 
+/* seek the element that will be extracted from the queue */
+extern void* queue_seek(queue q);
+
+/* set the ip of the queue */
+extern void queue_set_ip(queue q, unsigned int ip);
+
+/* get the ip of the queue */
+extern unsigned int queue_get_ip(queue q);
+
 #endif

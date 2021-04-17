@@ -5,12 +5,11 @@ int main(int argc, char *argv[]) {
 	packet m;
 	int rc;
 	queue q = queue_create();
-
 	init(argc - 2, argv + 2);
 
 	// initialize the route table and the arp table and sort the route table for every mask
 	struct route_table** route_table = parse_route_table(argv[1]);
-	for (int i = 0; i < 32; i++) 	
+	for (int i = 0; i < 32; i++)
 		qsort(route_table[i]->table, route_table[i]->current_length, sizeof(struct route_table_entry), cmpfunction);
 	struct arp_table* arp_table = init_arp_table();
 	while (1) {
@@ -33,16 +32,21 @@ int main(int argc, char *argv[]) {
 			}
 			else if (arp_hdr->op == htons(ARPOP_REPLY)) {
 				// add the entry to the arp table
-				add_entry_arp_table(arp_table, arp_hdr->spa, arp_hdr->sha);
+				add_entry_arp_table(&arp_table, arp_hdr->spa, arp_hdr->sha);
 				// if the queue contains packages that have to be sent extract them and send them
 				if (!queue_empty(q)) {
 					uint8_t mac[6];
 					memcpy(mac, arp_hdr->sha, 6);
-					packet packet_to_send = *(packet *)queue_deq(q);
+					packet packet_to_send = *(packet *)queue_seek(q);
 					struct ether_header *eth_hdr_pck = (struct ether_header *)packet_to_send.payload;
-					memcpy(eth_hdr_pck->ether_dhost, mac, 6);
-					get_interface_mac(m.interface, eth_hdr_pck->ether_shost);
-					send_packet(m.interface, &packet_to_send);
+					struct iphdr *ip_hdr_pck = (struct iphdr *)(packet_to_send.payload + sizeof(struct ether_header));
+					struct route_table_entry* best_route = find_best_route(route_table, ip_hdr_pck->daddr);
+					if (best_route->next_hop == arp_hdr->spa) {
+						memcpy(eth_hdr_pck->ether_dhost, mac, 6);
+						get_interface_mac(m.interface, eth_hdr_pck->ether_shost);
+						send_packet(m.interface, &packet_to_send);
+						queue_deq(q);
+					}
 				}
 			}
 		}
@@ -81,7 +85,7 @@ int main(int argc, char *argv[]) {
 			if (arp_entry == NULL) {
 				packet *aux = (packet *)calloc(1, sizeof(packet));
 				memcpy(aux, &m, sizeof(packet));
-				// save the packet in the queur that will be send when the arp reply is received
+				// save the packet in the queue that will be send when the arp reply is received
 				queue_enq(q, aux);
 				// send arp request as broadcast and update the ethernet header
 				for (int i = 0; i < 6; i++) {

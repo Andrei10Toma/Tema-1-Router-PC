@@ -110,13 +110,13 @@ struct arp_table_entry* search_arp_table(struct arp_table* arp_table, uint32_t i
     return NULL;
 }
 
-void add_entry_arp_table(struct arp_table* arp_table, uint32_t ip_addr, uint8_t mac[6]) {
-    if (arp_table->current_length == arp_table->max_length) {
-        arp_table->table = (struct arp_table_entry *)realloc(arp_table->table, arp_table->max_length * 2);
-        if (arp_table == NULL) exit(-1);
-        arp_table->max_length *= 2;
+void add_entry_arp_table(struct arp_table** arp_table, uint32_t ip_addr, uint8_t mac[6]) {
+    if ((*arp_table)->current_length == (*arp_table)->max_length) {
+        (*arp_table)->table = (struct arp_table_entry *)realloc((*arp_table)->table, (*arp_table)->max_length * 2);
+        if ((*arp_table) == NULL) exit(-1);
+        (*arp_table)->max_length *= 2;
     }
-    arp_table->table[arp_table->current_length].ip = ip_addr;
-    memcpy(arp_table->table[arp_table->current_length].mac, mac, 6);
-    arp_table->current_length++;
+    (*arp_table)->table[(*arp_table)->current_length].ip = ip_addr;
+    memcpy((*arp_table)->table[(*arp_table)->current_length].mac, mac, 6);
+    (*arp_table)->current_length++;
 }

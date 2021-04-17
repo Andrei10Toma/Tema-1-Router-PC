@@ -7,6 +7,7 @@ struct queue
 {
   list head;
   list tail;
+  unsigned int ip;
 };
 
 queue queue_create(void)
@@ -42,3 +43,14 @@ void *queue_deq(queue q)
   }
 }
 
+void *queue_seek(queue q) {
+  return q->head->element;
+}
+
+unsigned int queue_get_ip(queue q) {
+  return q->ip;
+}
+
+void queue_set_ip(queue q, unsigned int ip) {
+  q->ip = ip;
+}
